@@ -1,1 +1,4 @@
 test/
+reco_files/
+__pycache__/
+*/__pycache__/
