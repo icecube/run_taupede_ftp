@@ -12,15 +12,16 @@ work_path = "/data/user/tvaneede/GlobalFit/run_taupede_ftp"
 
 nfiles = 10
 
-for simulation_dataset in simulation_datasets:
-
-    simulation_subfolders = simulation_dataset['subfolders']
-    simulation_flavor = simulation_dataset["flavor"]
+for simulation_name in simulation_datasets:
     
+    simulation_subfolders = simulation_datasets[simulation_name]['subfolders']
+    simulation_flavor = simulation_datasets[simulation_name]["flavor"]
+    simulation_dataset = simulation_datasets[simulation_name]['dataset']
+
     for simulation_subfolder in simulation_subfolders:
 
         # fixed paths
-        reco_input_path = f"/data/sim/IceCube/2023/filtered/level2/neutrino-generator/{simulation_dataset}/{simulation_subfolder}"
+        reco_input_path = f"/data/sim/IceCube/2023/filtered/level3/cascade/neutrino-generator/{simulation_dataset}/{simulation_subfolder}"
 
         reco_out_path = f"{work_path}/reco_files/{reco_version}/{simulation_dataset}/{simulation_subfolder}"
 
@@ -49,7 +50,7 @@ for simulation_dataset in simulation_datasets:
         # create the dag job
         outfile = open(f"{dag_path}/submit.dag", 'w')
 
-        infiles_list = glob.glob(f"{reco_input_path}/Level2_{simulation_flavor}_*.i3.zst")
+        infiles_list = glob.glob(f"{reco_input_path}/Level3_{simulation_flavor}_*.i3.zst")
         print(f"found {len(infiles_list)} files")
 
         infiles_list = sorted(infiles_list, key=lambda x: int(re.search(r'\.(\d{6})\.i3\.zst$', x).group(1)))
