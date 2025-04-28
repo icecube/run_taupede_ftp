@@ -337,7 +337,7 @@ tray.AddModule('I3Writer', 'writer',DropOrphanStreams=[icetray.I3Frame.DAQ],
                    Filename=opts.outfile)
 
 tray.AddModule('TrashCan', 'yeswecan')
-tray.Execute(12)
+tray.Execute()
 tray.Finish()
 duration = datetime.datetime.now() - starttime
 print("\t\tFinished I3Tray..")
