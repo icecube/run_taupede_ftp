@@ -1,6 +1,7 @@
 import sys, os, glob
-from simulation_datasets import simulation_datasets
+import subprocess
 import re
+from simulation_datasets import simulation_datasets
 
 # set the inputs
 reco_version = "v4"
@@ -10,7 +11,8 @@ icemodel = "ftp-v3"
 dag_base_path = "/scratch/tvaneede/reco/run_taupede_ftp"
 work_path = "/data/user/tvaneede/GlobalFit/run_taupede_ftp"
 
-nfiles = 10
+nfiles = 10 # process x files per subfolder
+submit_jobs = True # actually submit the dag jobs
 
 for simulation_name in simulation_datasets:
     
@@ -72,3 +74,22 @@ for simulation_name in simulation_datasets:
 
             i+=1
             if i == nfiles: break
+
+        if submit_jobs:
+
+            os.chdir(dag_path)
+            print(f"Changed directory to: {dag_path}")
+
+            # Run the script and capture both stdout and stderr
+            process = subprocess.run(
+                "condor_submit_dag submit.dag", 
+                shell=True, 
+                stdout=subprocess.PIPE, 
+                stderr=subprocess.PIPE, 
+                text=True  # Ensures output is in string format
+            )
+
+            # Log output and errors
+            print("STDOUT:\n", process.stdout)
+            print("STDERR:\n", process.stderr)
+            print("Exit Code:", process.returncode)
