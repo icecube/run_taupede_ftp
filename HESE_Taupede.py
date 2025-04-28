@@ -36,7 +36,6 @@ import pickle
 from optparse import OptionParser
 
 parser = OptionParser()
-#parser = ArgumentParser(description=__doc__, formatter_class=ArgumentDefaultsHelpFormatter)
 usage = """%prog [options]"""
 parser.set_usage(usage)
 
@@ -248,45 +247,45 @@ tray.Add(timer, tag='stop', key='taupede')
       ########## MILLIPEDE ENERGY RECONSTRUCTIONS ###########
 ################################################################
 
-tray.Add(timer, tag='start', key='millipede')
-tray.Add(MillipedeWrapper, 'HESEMillipedeFit',
-    Seeds = ['HESEMonopodFit', 'HESETaupedeFit', 'SPEFit16'],
-    PhotonsPerBin = 5,
-    ShowerSpacing = 5,
-    innerboundary=opts.innerboundary,
-    outerboundary=opts.outerboundary,
-    outeredge_x=outeredge_x,
-    outeredge_y=outeredge_y,
-    **millipede_params)
-tray.Add(timer, tag='stop', key='millipede')
+# tray.Add(timer, tag='start', key='millipede')
+# tray.Add(MillipedeWrapper, 'HESEMillipedeFit',
+#     Seeds = ['HESEMonopodFit', 'HESETaupedeFit', 'SPEFit16'],
+#     PhotonsPerBin = 5,
+#     ShowerSpacing = 5,
+#     innerboundary=opts.innerboundary,
+#     outerboundary=opts.outerboundary,
+#     outeredge_x=outeredge_x,
+#     outeredge_y=outeredge_y,
+#     **millipede_params)
+# tray.Add(timer, tag='stop', key='millipede')
 
 ################################################################
     ############## TRUE OBSERVABLES ##############
 ################################################################
-if opts.flavor != 'data':
-    tray.Add(calculatetrueobservables,
-        'calc_true_observables',
-        innerboundary=opts.innerboundary,
-        outeredge_x=outeredge_x, 
-        outeredge_y=outeredge_y)
+# if opts.flavor != 'data':
+#     tray.Add(calculatetrueobservables,
+#         'calc_true_observables',
+#         innerboundary=opts.innerboundary,
+#         outeredge_x=outeredge_x, 
+#         outeredge_y=outeredge_y)
 
-    tray.AddModule(add_primary)
-    tray.AddModule(penetrating_depth, gcd=gcdFile, depth_name_suffix='')
+#     tray.AddModule(add_primary)
+#     tray.AddModule(penetrating_depth, gcd=gcdFile, depth_name_suffix='')
 
 
 ################################################################
    ########### RECONSTRUCTED OBSERVABLES ###########
 ################################################################
     
-tray.Add(timer, tag='start', key='Reco_observables')
-tray.AddModule(calculaterecoobservables,
-	   'calc_reco_observables',
-	   innerboundary=opts.innerboundary,
-	   outeredge_x=outeredge_x,
-	   outeredge_y=outeredge_y)
-tray.Add(timer, tag='stop', key='Reco_observables')   
+# tray.Add(timer, tag='start', key='Reco_observables')
+# tray.AddModule(calculaterecoobservables,
+# 	   'calc_reco_observables',
+# 	   innerboundary=opts.innerboundary,
+# 	   outeredge_x=outeredge_x,
+# 	   outeredge_y=outeredge_y)
+# tray.Add(timer, tag='stop', key='Reco_observables')   
 
-tray.Add(checkfinaltopology)
+# tray.Add(checkfinaltopology)
 
 deletekeys =['CalibratedSLC', 'FilterMask_NullSplit0','ClusterCleaningExcludedTanks','I3MCTree_preMuonProp_RNGState','SimTrimmer','IceTopPulses',\
            'IceTopRawData','OfflineIceTopHLCTankPulses','OfflineIceTopSLCVEMPulses','InIceDSTPulses','HESE_SPEFitSingle',\
@@ -337,7 +336,7 @@ tray.AddModule('I3Writer', 'writer',DropOrphanStreams=[icetray.I3Frame.DAQ],
                    Filename=opts.outfile)
 
 tray.AddModule('TrashCan', 'yeswecan')
-tray.Execute()
+tray.Execute(12)
 tray.Finish()
 duration = datetime.datetime.now() - starttime
 print("\t\tFinished I3Tray..")
