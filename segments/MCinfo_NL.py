@@ -440,6 +440,9 @@ def mcinfo(tray, name,
         # get frame objects
         mctree = frame['I3MCTree']
         eventclass = frame['MCInteractionEventclass'+name_suffix]
+
+        print("addtruedoublebang eventclass", eventclass)
+
         if ('VertexOutgoingLepton' in frame and
                         'VertexOutgoingHadron' in frame):
              print('theres lepton and hadron present')

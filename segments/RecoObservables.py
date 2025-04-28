@@ -87,7 +87,7 @@ calculate reco observables
 def calculaterecoobservables(frame,innerboundary,outeredge_x, outeredge_y):
     energythreshold=1e3
     # the single vertex containment
-    cascade = frame['HESEMonopodFit']
+    cascade = frame['L3_MonopodFit4_AmptFit']
     contained = iscontained(cascade.pos.x, cascade.pos.y, cascade.pos.z, innerboundary,outeredge_x, outeredge_y)
 
     # the double vertex properties and containment
@@ -108,7 +108,7 @@ def calculaterecoobservables(frame,innerboundary,outeredge_x, outeredge_y):
     etot = n.log10(frame['HESEMillipedeFitTruncatedDepositedEnergy'].value)
     reco_e = frame['HESEMillipedeFitTruncatedDepositedEnergy'].value
     if frame.Has('energy_reco'):
-	      frame.Delete('energy_reco')
+        frame.Delete('energy_reco')
     usetruncated = True
     if etot < n.log10(energythreshold):
         etot = n.log10(frame['HESEMillipedeFitDepositedEnergy'].value)

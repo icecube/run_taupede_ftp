@@ -177,6 +177,7 @@ def MillipedeWrapper(tray, name,innerboundary, outerboundary,outeredge_x,outered
         if not frame.Has(Seed + 'Particles'):
             print(f'frame does not contain key {Seed + "Particles"}. '
                   f'Skipping deposited energy calc.')
+            return
         trackvector, trunctrackvector = frame[Seed + 'Particles'], I3VectorI3Particle()
         etot, truncetot = 0, 0
         for sec in trackvector:

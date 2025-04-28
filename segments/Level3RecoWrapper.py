@@ -80,5 +80,3 @@ def Level3ReconstructionWrapper(tray, name,pulses):
 
     tray.Add(addlevel3seed, Output=name)
     
-
-

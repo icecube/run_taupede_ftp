@@ -178,12 +178,11 @@ outeredge_y = cy[order]
 #      #################### SelfVeto ######################
 # ################################################################
 
+tray.Add(SelfVetoWrapper)
 if opts.flavor != 'data':
     tray.Add('TauGeneratesMuon', If=lambda f : 'I3MCTree' in f)
-
-## both these variables are not in the new files
-# tray.Add(lambda frame : 'VHESelfVeto' in frame and not frame['VHESelfVeto'].value) 
-# tray.Add(lambda frame : 'CausalQTot' in frame and frame['CausalQTot'].value >= 6000)
+tray.Add(lambda frame : 'VHESelfVeto' in frame and not frame['VHESelfVeto'].value) 
+tray.Add(lambda frame : 'CausalQTot' in frame and frame['CausalQTot'].value >= 6000)
 
 
 ################################################################
@@ -201,39 +200,39 @@ if opts.flavor != 'data':
                         PhotonsPerBin=5,
                         ShowerSpacing=5)
 
-################################################################
-       ############## LEVEL 2 RECONSTRUCTION #############
-################################################################
-tray.Add(timer, tag='start', key='level2')
-tray.Add(Level2ReconstructionWrapper, 'level2reco', Pulses = pulses)
-tray.Add(timer, tag='stop', key='level2')
+# ################################################################
+#        ############## LEVEL 2 RECONSTRUCTION #############
+# ################################################################
+# tray.Add(timer, tag='start', key='level2')
+# tray.Add(Level2ReconstructionWrapper, 'level2reco', Pulses = pulses)
+# tray.Add(timer, tag='stop', key='level2')
 
-################################################################
-       ############## LEVEL 3 RECONSTRUCTION #############
-################################################################
+# ################################################################
+#        ############## LEVEL 3 RECONSTRUCTION #############
+# ################################################################
 
-tray.Add(timer, tag='start', key='level3')
-tray.Add(Level3ReconstructionWrapper, 'CombinedCascadeSeed_L3',pulses=pulses) 
-tray.Add(timer, tag='stop', key='level3')
+# tray.Add(timer, tag='start', key='level3')
+# tray.Add(Level3ReconstructionWrapper, 'CombinedCascadeSeed_L3',pulses=pulses) 
+# tray.Add(timer, tag='stop', key='level3')
 
-################################################################
-       ############## MONOPOD RECONSTRUCTION ############
-################################################################
+# ################################################################
+#        ############## MONOPOD RECONSTRUCTION ############
+# ################################################################
 
-tray.Add(timer, tag='start', key='monopod')
-tray.Add(MonopodWrapper, 'HESEMonopodFit',
-     Seed = 'CombinedCascadeSeed_L3',
-     Iterations = 4,
-     PhotonsPerBin = photons_per_bin ,
-     **millipede_params) 
-tray.Add(timer, tag='stop', key='monopod')
+# tray.Add(timer, tag='start', key='monopod')
+# tray.Add(MonopodWrapper, 'HESEMonopodFit',
+#      Seed = 'CombinedCascadeSeed_L3',
+#      Iterations = 4,
+#      PhotonsPerBin = photons_per_bin ,
+#      **millipede_params) 
+# tray.Add(timer, tag='stop', key='monopod')
 
 ################################################################
     ############## TAUPEDE RECONSTRUCTION ################
 ################################################################
 tray.Add(timer, tag='start', key='taupede')
 tray.Add(TaupedeWrapper, 'HESETaupedeFit',
-     Seed = 'HESEMonopodFit',
+     Seed = 'L3_MonopodFit4_AmptFit',
      Iterations = 4,
      PhotonsPerBin = photons_per_bin ,
      innerboundary=opts.innerboundary,
@@ -247,84 +246,86 @@ tray.Add(timer, tag='stop', key='taupede')
       ########## MILLIPEDE ENERGY RECONSTRUCTIONS ###########
 ################################################################
 
-# tray.Add(timer, tag='start', key='millipede')
-# tray.Add(MillipedeWrapper, 'HESEMillipedeFit',
-#     Seeds = ['HESEMonopodFit', 'HESETaupedeFit', 'SPEFit16'],
-#     PhotonsPerBin = 5,
-#     ShowerSpacing = 5,
-#     innerboundary=opts.innerboundary,
-#     outerboundary=opts.outerboundary,
-#     outeredge_x=outeredge_x,
-#     outeredge_y=outeredge_y,
-#     **millipede_params)
-# tray.Add(timer, tag='stop', key='millipede')
+tray.Add(timer, tag='start', key='millipede')
+tray.Add(MillipedeWrapper, 'HESEMillipedeFit',
+    Seeds = ['L3_MonopodFit4_AmptFit', 'HESETaupedeFit', 'CscdL3_SPEFit16'],
+    PhotonsPerBin = 5,
+    ShowerSpacing = 5,
+    innerboundary=opts.innerboundary,
+    outerboundary=opts.outerboundary,
+    outeredge_x=outeredge_x,
+    outeredge_y=outeredge_y,
+    **millipede_params)
+tray.Add(timer, tag='stop', key='millipede')
 
-################################################################
-    ############## TRUE OBSERVABLES ##############
-################################################################
-# if opts.flavor != 'data':
-#     tray.Add(calculatetrueobservables,
-#         'calc_true_observables',
-#         innerboundary=opts.innerboundary,
-#         outeredge_x=outeredge_x, 
-#         outeredge_y=outeredge_y)
+###############################################################
+    ############# TRUE OBSERVABLES ##############
+###############################################################
+if opts.flavor != 'data':
+    tray.Add(calculatetrueobservables,
+        'calc_true_observables',
+        innerboundary=opts.innerboundary,
+        outeredge_x=outeredge_x, 
+        outeredge_y=outeredge_y)
 
-#     tray.AddModule(add_primary)
-#     tray.AddModule(penetrating_depth, gcd=gcdFile, depth_name_suffix='')
+    tray.AddModule(add_primary)
+    tray.AddModule(penetrating_depth, gcd=gcdFile, depth_name_suffix='')
 
 
 ################################################################
    ########### RECONSTRUCTED OBSERVABLES ###########
 ################################################################
     
-# tray.Add(timer, tag='start', key='Reco_observables')
-# tray.AddModule(calculaterecoobservables,
-# 	   'calc_reco_observables',
-# 	   innerboundary=opts.innerboundary,
-# 	   outeredge_x=outeredge_x,
-# 	   outeredge_y=outeredge_y)
-# tray.Add(timer, tag='stop', key='Reco_observables')   
+tray.Add(timer, tag='start', key='Reco_observables')
+tray.AddModule(calculaterecoobservables,
+	   'calc_reco_observables',
+	   innerboundary=opts.innerboundary,
+	   outeredge_x=outeredge_x,
+	   outeredge_y=outeredge_y)
+tray.Add(timer, tag='stop', key='Reco_observables')   
 
-# tray.Add(checkfinaltopology)
+tray.Add(checkfinaltopology)
 
-deletekeys =['CalibratedSLC', 'FilterMask_NullSplit0','ClusterCleaningExcludedTanks','I3MCTree_preMuonProp_RNGState','SimTrimmer','IceTopPulses',\
-           'IceTopRawData','OfflineIceTopHLCTankPulses','OfflineIceTopSLCVEMPulses','InIceDSTPulses','HESE_SPEFitSingle',\
-           'MPEFitCramerRaoParams','CascadeContainmentTagging_L2','OnlineL2_SplineMPE','CascadeDipoleFit_L2Params','CascadeLast_IC_Singles_L2Params',\
-       'CascadeImprovedLineFit_L2','CascadeImprovedLineFit_L2Params','CascadeLast_IC_Singles_L2','HESE_VHESelfVetoVertexPos','CascadeLast_L2Params',\
-       'CascadeLineFitSplit1_L2','OnlineL2_SplineMPE_CramerRao_cr_azimuth','CascadeLineFitSplit1_L2Params','OnlineL2_SplineMPE_DirectHitsICA',\
-       'CascadeLineFitSplit2_L2','CascadeLineFitSplit2_L2Params','OnlineL2_SplineMPE_CharacteristicsNoRCutIC','CascadeLineFit_L2',\
-'CascadeLlhVertexFitSplit2_L2','TankPulseMergerExcludedTanks','EHEDSTShieldParameters_SPE12','Estres_CausalQTot','CascadeLlhVertexFitSplit2_L2Params',\
-'MPEFitMuEX','CascadeLlhVertexFit_IC_Singles_L2','CascadeLlhVertexFit_L2','CascadeLlhVertexFit_L2Params','CascadeLlhVertexFit_IC_Singles_L2Params',\
-'EHEOpheliaParticleSRT','CascadeToISplit1_L2Params','CascadeLlhVertexFitSplit1_L2Params','CascadeToISplit2_L2','HESE_MuonImprovedLineFit',\
- 'CascadeToISplit2_L2Params','OnlineL2_SplineMPE_CharacteristicsIC','CorsikaMoonMJD','OnlineL2_SplitTime1_SPE2itFitFitParams','PassedKeepSuperDSTOnly',\
- 'CscdL2_Topo1stPulse_HLC0','CscdL2_Topo1stPulse_HLCSplitCount','OnlineL2_SplitGeo1_BayesianFitFitParams','EHEATWDPortiaPulseSRT','EHEATWDPulseSeriesSRT',\
-'EHEBestPortiaPulseSRT','EHEDSTShieldParameters_ImpLF','EHEFADCPulseSeriesSRT','EHEOpheliaParticleBTWSRT','EHEOpheliaParticleSRT_ImpLF',\
-'EHEPortiaEventSummary','HESE_CascadeLlhVertexFitParams','EHEOpheliaBTWSRT','HESE_HomogenizedQTot','HESE_CausalQTot','OnlineL2_SplineMPE_CramerRaoParams',\
-'OnlineL2_SplineMPE_TruncatedEnergy_ORIG_Neutrino','OnlineL2_BestFit_Name','CascadeDipoleFit_L2','SaturationWindows','HESE_VHESelfVetoVertexTime',\
-'HESE_llhratio','OnlineL2_SplineMPE_TruncatedEnergy_DOMS_Neutrino','Estres_Homogenized_QTot','OnlineL2_BestFit_CramerRaoParams','PoleEHEOphelia_ImpLF',\
- 'OnlineL2_SplineMPE_MuEx_r','I3DST','OnlineL2_SplineMPE_TruncatedEnergy_DOMS_Muon','CscdL2_Topo_HLCFirstPulses','OnlineL2_SplitTime1_Linefit',\
- 'CascadeSplitPulses_L22','HESE_SPEFit2','splittedDOMMap','OfflineIceTopHLCVEMPulses','IceTop_SLC_InTime','SplineMPE_Estres','OnlineL2_HitStatisticsValues',\
-'OnlineL2_HitStatisticsValuesIC','OnlineL2_SplineMPE_DirectHitsA','LineFitEHE','MPEFit','MPEFitCharacteristics','OnlineL2_BayesianFit',\
- 'OnlineL2_SplitGeo2_BayesianFit','OnlineL2_SplitTime1_BayesianFitFitParams','SPEFitSingleEHEFitParams','OnlineL2_BestFitFitParams',\
- 'OnlineL2_BestFit_CramerRao_cr_azimuth','OnlineL2_HitMultiplicityValues','OnlineL2_BestFit_CramerRao_cr_zenith','OnlineL2_HitMultiplicityValuesIC',\
- 'CleanIceTopRawData','OnlineL2_BestFit_DirectHitsA','OnlineL2_BestFit_DirectHitsB','OnlineL2_BestFit_DirectHitsC',\
-'OnlineL2_BestFit_DirectHitsD','CascadeLineFit_L2Params','OnlineL2_SplitGeo1_SPE2itFitFitParams','OnlineL2_BestFit_DirectHitsE','OnlineL2_BestFit_MuEx',\
- 'OnlineL2_BestFit_MuEx_r','CascadeLlhVertexFitSplit1_L2','OnlineL2_CleanedMuonPulses','EHEPortiaEventSummarySRT',
- 'OnlineL2_SplineMPE_TruncatedEnergy_AllDOMS_Muon','CascadeContainmentTagging_Singles_L2','OnlineL2_MPEFit','OnlineL2_MPEFitFitParams',\
- 'OnlineL2_SplineMPEFitParams','PoleEHESummaryPulseInfo','EHEOpheliaSRT','OnlineL2_BestFit','OnlineL2_SPE2itFit','PoleMuonLlhFit',\
- 'OnlineL2_SplineMPE_Characteristics','OnlineL2_SplineMPE_TruncatedEnergy_BINS_Muon','OnlineL2_SplineMPE_CharacteristicsNoRCut',\
- 'OnlineL2_SplineMPE_TruncatedEnergy_BINS_Neutrino','OnlineL2_SplineMPE_CramerRao_cr_zenith','CorsikaSunMJD','HESE_CascadeLlhVertexFit',
- 'OnlineL2_SplineMPE_DirectHitsB','OnlineL2_SplineMPE_DirectHitsC','OnlineL2_SplitGeo2_BayesianFitFitParams',
- 'OnlineL2_SplineMPE_DirectHitsD','CascadeFillRatio_L2','OnlineL2_SplineMPE_DirectHitsE','OnlineL2_SplineMPE_DirectHitsICB','OnlineL2_SplineMPE_DirectHitsICC',\
- 'OnlineL2_SplineMPE_DirectHitsICD','OnlineL2_SplineMPE_DirectHitsICE','OnlineL2_BayesianFitFitParams','OnlineL2_SplineMPE_MuEx',\
- 'BeaconLaunches','OnlineL2_SplineMPE_TruncatedEnergy_ORIG_dEdX','SplineMPE_EstresFitParams','splittedDOMMapSRT','OnlineL2_SplineMPE_TruncatedEnergy_AllBINS_MuEres',\
-'OnlineL2_SplitGeo1_BayesianFit','OnlineL2_SplitGeo1_Linefit','OnlineL2_SplitGeo1_SPE2itFit','SPEFitSingleFitParams','OnlineL2_SplitGeo2_SPE2itFit',\
-'OnlineL2_SplitGeo2_SPE2itFitFitParams','CascadeLast_L2','OnlineL2_SplitTime1_SPE2itFit','OnlineL2_SplitTime2_BayesianFit',\
-'OnlineL2_SplitTime2_SPE2itFit','OnlineL2_SplitTime2_BayesianFitFitParams','OnlineL2_SplineMPE_TruncatedEnergy_ORIG_Muon','OnlineL2_SplitTime2_Linefit',\
- 'OnlineL2_SplitTime2_SPE2itFitFitParams','HESE_MuonImprovedLineFitParams','PoleCascadeFilter_CscdLlh','PoleEHEOpheliaParticle_ImpLF','PoleMuonLinefit',\
- 'PoleMuonLlhFitFitParams','SPEFit12EHE','SPEFit12EHEFitParams','SPEFit2Characteristics','MPEFitFitParams','SPEFit2CramerRaoParams',
-'SPEFit2CramerRao_ITParams','OnlineL2_SplitGeo2_Linefit','SPEFit2MuEX_FSS','SPEFitSingle','SPEFitSingleEHE','OnlineL2_SplitTime1_BayesianFit',\
- 'OnlineL2_SplineMPE_MuE',]
+# deletekeys =['CalibratedSLC', 'FilterMask_NullSplit0','ClusterCleaningExcludedTanks','I3MCTree_preMuonProp_RNGState','SimTrimmer','IceTopPulses',\
+#            'IceTopRawData','OfflineIceTopHLCTankPulses','OfflineIceTopSLCVEMPulses','InIceDSTPulses','HESE_SPEFitSingle',\
+#            'MPEFitCramerRaoParams','CascadeContainmentTagging_L2','OnlineL2_SplineMPE','CascadeDipoleFit_L2Params','CascadeLast_IC_Singles_L2Params',\
+#        'CascadeImprovedLineFit_L2','CascadeImprovedLineFit_L2Params','CascadeLast_IC_Singles_L2','HESE_VHESelfVetoVertexPos','CascadeLast_L2Params',\
+#        'CascadeLineFitSplit1_L2','OnlineL2_SplineMPE_CramerRao_cr_azimuth','CascadeLineFitSplit1_L2Params','OnlineL2_SplineMPE_DirectHitsICA',\
+#        'CascadeLineFitSplit2_L2','CascadeLineFitSplit2_L2Params','OnlineL2_SplineMPE_CharacteristicsNoRCutIC','CascadeLineFit_L2',\
+# 'CascadeLlhVertexFitSplit2_L2','TankPulseMergerExcludedTanks','EHEDSTShieldParameters_SPE12','Estres_CausalQTot','CascadeLlhVertexFitSplit2_L2Params',\
+# 'MPEFitMuEX','CascadeLlhVertexFit_IC_Singles_L2','CascadeLlhVertexFit_L2','CascadeLlhVertexFit_L2Params','CascadeLlhVertexFit_IC_Singles_L2Params',\
+# 'EHEOpheliaParticleSRT','CascadeToISplit1_L2Params','CascadeLlhVertexFitSplit1_L2Params','CascadeToISplit2_L2','HESE_MuonImprovedLineFit',\
+#  'CascadeToISplit2_L2Params','OnlineL2_SplineMPE_CharacteristicsIC','CorsikaMoonMJD','OnlineL2_SplitTime1_SPE2itFitFitParams','PassedKeepSuperDSTOnly',\
+#  'CscdL2_Topo1stPulse_HLC0','CscdL2_Topo1stPulse_HLCSplitCount','OnlineL2_SplitGeo1_BayesianFitFitParams','EHEATWDPortiaPulseSRT','EHEATWDPulseSeriesSRT',\
+# 'EHEBestPortiaPulseSRT','EHEDSTShieldParameters_ImpLF','EHEFADCPulseSeriesSRT','EHEOpheliaParticleBTWSRT','EHEOpheliaParticleSRT_ImpLF',\
+# 'EHEPortiaEventSummary','HESE_CascadeLlhVertexFitParams','EHEOpheliaBTWSRT','HESE_HomogenizedQTot','HESE_CausalQTot','OnlineL2_SplineMPE_CramerRaoParams',\
+# 'OnlineL2_SplineMPE_TruncatedEnergy_ORIG_Neutrino','OnlineL2_BestFit_Name','CascadeDipoleFit_L2','SaturationWindows','HESE_VHESelfVetoVertexTime',\
+# 'HESE_llhratio','OnlineL2_SplineMPE_TruncatedEnergy_DOMS_Neutrino','Estres_Homogenized_QTot','OnlineL2_BestFit_CramerRaoParams','PoleEHEOphelia_ImpLF',\
+#  'OnlineL2_SplineMPE_MuEx_r','I3DST','OnlineL2_SplineMPE_TruncatedEnergy_DOMS_Muon','CscdL2_Topo_HLCFirstPulses','OnlineL2_SplitTime1_Linefit',\
+#  'CascadeSplitPulses_L22','HESE_SPEFit2','splittedDOMMap','OfflineIceTopHLCVEMPulses','IceTop_SLC_InTime','SplineMPE_Estres','OnlineL2_HitStatisticsValues',\
+# 'OnlineL2_HitStatisticsValuesIC','OnlineL2_SplineMPE_DirectHitsA','LineFitEHE','MPEFit','MPEFitCharacteristics','OnlineL2_BayesianFit',\
+#  'OnlineL2_SplitGeo2_BayesianFit','OnlineL2_SplitTime1_BayesianFitFitParams','SPEFitSingleEHEFitParams','OnlineL2_BestFitFitParams',\
+#  'OnlineL2_BestFit_CramerRao_cr_azimuth','OnlineL2_HitMultiplicityValues','OnlineL2_BestFit_CramerRao_cr_zenith','OnlineL2_HitMultiplicityValuesIC',\
+#  'CleanIceTopRawData','OnlineL2_BestFit_DirectHitsA','OnlineL2_BestFit_DirectHitsB','OnlineL2_BestFit_DirectHitsC',\
+# 'OnlineL2_BestFit_DirectHitsD','CascadeLineFit_L2Params','OnlineL2_SplitGeo1_SPE2itFitFitParams','OnlineL2_BestFit_DirectHitsE','OnlineL2_BestFit_MuEx',\
+#  'OnlineL2_BestFit_MuEx_r','CascadeLlhVertexFitSplit1_L2','OnlineL2_CleanedMuonPulses','EHEPortiaEventSummarySRT',
+#  'OnlineL2_SplineMPE_TruncatedEnergy_AllDOMS_Muon','CascadeContainmentTagging_Singles_L2','OnlineL2_MPEFit','OnlineL2_MPEFitFitParams',\
+#  'OnlineL2_SplineMPEFitParams','PoleEHESummaryPulseInfo','EHEOpheliaSRT','OnlineL2_BestFit','OnlineL2_SPE2itFit','PoleMuonLlhFit',\
+#  'OnlineL2_SplineMPE_Characteristics','OnlineL2_SplineMPE_TruncatedEnergy_BINS_Muon','OnlineL2_SplineMPE_CharacteristicsNoRCut',\
+#  'OnlineL2_SplineMPE_TruncatedEnergy_BINS_Neutrino','OnlineL2_SplineMPE_CramerRao_cr_zenith','CorsikaSunMJD','HESE_CascadeLlhVertexFit',
+#  'OnlineL2_SplineMPE_DirectHitsB','OnlineL2_SplineMPE_DirectHitsC','OnlineL2_SplitGeo2_BayesianFitFitParams',
+#  'OnlineL2_SplineMPE_DirectHitsD','CascadeFillRatio_L2','OnlineL2_SplineMPE_DirectHitsE','OnlineL2_SplineMPE_DirectHitsICB','OnlineL2_SplineMPE_DirectHitsICC',\
+#  'OnlineL2_SplineMPE_DirectHitsICD','OnlineL2_SplineMPE_DirectHitsICE','OnlineL2_BayesianFitFitParams','OnlineL2_SplineMPE_MuEx',\
+#  'BeaconLaunches','OnlineL2_SplineMPE_TruncatedEnergy_ORIG_dEdX','SplineMPE_EstresFitParams','splittedDOMMapSRT','OnlineL2_SplineMPE_TruncatedEnergy_AllBINS_MuEres',\
+# 'OnlineL2_SplitGeo1_BayesianFit','OnlineL2_SplitGeo1_Linefit','OnlineL2_SplitGeo1_SPE2itFit','SPEFitSingleFitParams','OnlineL2_SplitGeo2_SPE2itFit',\
+# 'OnlineL2_SplitGeo2_SPE2itFitFitParams','CascadeLast_L2','OnlineL2_SplitTime1_SPE2itFit','OnlineL2_SplitTime2_BayesianFit',\
+# 'OnlineL2_SplitTime2_SPE2itFit','OnlineL2_SplitTime2_BayesianFitFitParams','OnlineL2_SplineMPE_TruncatedEnergy_ORIG_Muon','OnlineL2_SplitTime2_Linefit',\
+#  'OnlineL2_SplitTime2_SPE2itFitFitParams','HESE_MuonImprovedLineFitParams','PoleCascadeFilter_CscdLlh','PoleEHEOpheliaParticle_ImpLF','PoleMuonLinefit',\
+#  'PoleMuonLlhFitFitParams','SPEFit12EHE','SPEFit12EHEFitParams','SPEFit2Characteristics','MPEFitFitParams','SPEFit2CramerRaoParams',
+# 'SPEFit2CramerRao_ITParams','OnlineL2_SplitGeo2_Linefit','SPEFit2MuEX_FSS','SPEFitSingle','SPEFitSingleEHE','OnlineL2_SplitTime1_BayesianFit',\
+#  'OnlineL2_SplineMPE_MuE',]
+
+deletekeys = []
 
 tray.Add('Delete', keys=deletekeys)                                                                   
 

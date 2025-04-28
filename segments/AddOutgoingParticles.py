@@ -6,6 +6,7 @@ from icecube.sim_services import ShowerParameters
 import numpy as np
 
 def mctreeinfo(frame):
+
     tree = frame['I3MCTree_preMuonProp']
     positions = []
     times = []
@@ -39,8 +40,6 @@ def mctreeinfo(frame):
                 positions.append(t.pos)
                 times.append(t.time)
        
-        
-        
     frame['NumVerticesInFiducialVolume'] = icetray.I3Int(len(positions))
     frame['VertexPosition'] = positions[0]
     
