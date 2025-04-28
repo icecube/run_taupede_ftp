@@ -1,18 +1,28 @@
 import sys, os, glob
 
 # set the inputs
-reco_version = "v0"
+reco_version = "v3"
 icemodel = "ftp-v3"
 
-# SnowStorm_NuTau_highE
-simulation_dataset   = "22635" 
-simulation_subfolder = "0000000-0000999"
-simulation_flavor    = "NuTau"
+# # SnowStorm_NuTau_highE
+# simulation_dataset   = "22635" 
+# simulation_subfolder = "0000000-0000999"
+# simulation_flavor    = "NuTau"
 
 # # SnowStorm_NuTau_midE
 # simulation_dataset   = "22634" 
 # simulation_subfolder = "0000000-0000999"
 # simulation_flavor    = "NuTau"
+
+# SnowStorm_NuE_highE
+simulation_dataset   = "22612" 
+simulation_subfolder = "0000000-0000999"
+simulation_flavor    = "NuE"
+
+# SnowStorm_NuE_midE
+simulation_dataset   = "22613" 
+simulation_subfolder = "0000000-0000999"
+simulation_flavor    = "NuE"
 
 # fixed paths
 work_path = "/data/user/tvaneede/GlobalFit/run_taupede_ftp"
@@ -47,6 +57,9 @@ outfile = open(f"{dag_path}/submit.dag", 'w')
 
 infiles_list = glob.glob(f"{reco_input_path}/Level2_{simulation_flavor}_*.i3.zst")
 print(f"found {len(infiles_list)} files")
+
+import re
+infiles_list = sorted(infiles_list, key=lambda x: int(re.search(r'\.(\d{6})\.i3\.zst$', x).group(1)))
 
 i = 0
 for INFILES in infiles_list:
