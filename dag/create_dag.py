@@ -4,14 +4,14 @@ import re
 from simulation_datasets import simulation_datasets
 
 # set the inputs
-reco_version = "v4"
+reco_version = "v5"
 icemodel = "ftp-v3"
 
 # fixed paths
 dag_base_path = "/scratch/tvaneede/reco/run_taupede_ftp"
 work_path = "/data/user/tvaneede/GlobalFit/run_taupede_ftp"
 
-nfiles = 10 # process x files per subfolder
+nfiles = 100 # process x files per subfolder
 submit_jobs = True # actually submit the dag jobs
 
 for simulation_name in simulation_datasets:

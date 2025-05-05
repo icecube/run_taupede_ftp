@@ -1,0 +1,15 @@
+universe = vanilla
+executable = /data/user/tvaneede/GlobalFit/run_taupede_ftp/dag/wrapper.sh
+notification = Never
+IWD = $ENV(HOME)
+request_memory = 8.0 GB
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+transfer_output_files = ""
++FileSystemDomain = "notarealdomain"
+arguments = -i $(INFILES) -o $(OUTFILE) --flavor $(FLAVOR) --icemodel $(ICEMODEL)
+output = $(LOGDIR)/$(JOBID).out
+error = $(LOGDIR)/$(JOBID).err
+log = $(LOGDIR)/$(JOBID).log
+requirements = (TARGET.has_ssse3) && (TARGET.has_avx2)
+queue 1
