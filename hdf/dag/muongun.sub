@@ -1,0 +1,14 @@
+universe = vanilla
+executable = /data/user/tvaneede/GlobalFit/create_hdf_files/dag/muongun.sh
+notification = Never
+IWD = $ENV(HOME)
+request_memory = 8.0 GB
+should_transfer_files = YES
+when_to_transfer_output = ON_EXIT_OR_EVICT
+transfer_output_files = ""
++FileSystemDomain = "notarealdomain"
+arguments = --Topology $(Topology) --Dataset $(Dataset) --subfolder $(subfolder) --Table $(Table)
+output = $(LOGDIR)/$(JOBID).out
+error = $(LOGDIR)/$(JOBID).err
+log = $(LOGDIR)/$(JOBID).log
+queue 1
