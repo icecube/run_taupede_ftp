@@ -43,14 +43,26 @@ def get_variables( hdf_file ):
     variables['ConventionalAtmosphericPassingFractions'] = hdf_file['ConventionalAtmosphericPassingFractions'].value.values
     variables['PromptAtmosphericPassingFractions'] = hdf_file['PromptAtmosphericPassingFractions'].value.values
 
-    # # evt gen
-    # variables['RecoL_evtgen'] = np.abs(hdf_file['MyEgeneratorOutputFrameKey']['cascade_cascade_00001_distance'].values)
-    # variables['RecoL_evtgen_noabs'] = hdf_file['MyEgeneratorOutputFrameKey']['cascade_cascade_00001_distance'].values
-    # variables['RecoE1_evtgen'] = hdf_file['MyEgeneratorOutputFrameKey']['cascade_energy'].values 
-    # variables['RecoE2_evtgen'] = hdf_file['MyEgeneratorOutputFrameKey']['cascade_cascade_00001_energy'].values 
-    # variables['RecoETot_evtgen'] = variables['RecoE1_evtgen'] + variables['RecoE2_evtgen']
-    # variables['FinalTopology_evtgen'] = hdf_file['FinalTopology_evtgen'].value.values
-    # variables['FinalEventClass_evtgen'] = hdf_file['FinalEventClass_evtgen'].value.values
+    return variables
+
+def append_evtgen_var( hdf_file, variables ):
+
+    # evt gen
+    variables['RecoL_evtgen'] = np.abs(hdf_file['MyEgeneratorOutputFrameKey']['cascade_cascade_00001_distance'].values)
+    variables['RecoL_evtgen_noabs'] = hdf_file['MyEgeneratorOutputFrameKey']['cascade_cascade_00001_distance'].values
+    variables['RecoE1_evtgen'] = hdf_file['MyEgeneratorOutputFrameKey']['cascade_energy'].values 
+    variables['RecoE2_evtgen'] = hdf_file['MyEgeneratorOutputFrameKey']['cascade_cascade_00001_energy'].values 
+    variables['RecoETot_evtgen'] = variables['RecoE1_evtgen'] + variables['RecoE2_evtgen']
+    variables['FinalTopology_evtgen'] = hdf_file['FinalTopology_evtgen'].value.values
+    variables['FinalEventClass_evtgen'] = hdf_file['FinalEventClass_evtgen'].value.values
+
+    return variables
+
+def append_tianlu_var( hdf_file, variables ):
+
+    variables['RecoL_tianlu'] = hdf_file['TaupedeFit_iMIGRAD_PPB0_0']['length'].values
+    variables['RecoE1_tianlu'] = hdf_file['TaupedeFit_iMIGRAD_PPB0_0']['energy'].values 
+    variables['RecoE2_tianlu'] = hdf_file['TaupedeFit_iMIGRAD_PPB0_1']['energy'].values 
 
     return variables
 

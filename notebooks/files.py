@@ -29,3 +29,10 @@ files["taupede_v5"] = {
     "NuTau_E3" : {"file_path" : "/data/user/tvaneede/GlobalFit/run_taupede_ftp/hdf/output/v5/NuTau_22634_0000000-0000999.hdf5", 'nfiles' : 100},
 
 }
+
+files["taupede_v5_tianlu"] = {
+
+    "NuTau_E2" : {"file_path" : "/data/user/tvaneede/GlobalFit/run_taupede_ftp/hdf/output/v5_tianlu/NuTau_22635_0.hdf5", 'nfiles' : 100},
+    "NuTau_E3" : {"file_path" : "/data/user/tvaneede/GlobalFit/run_taupede_ftp/hdf/output/v5_tianlu/NuTau_22634_0.hdf5", 'nfiles' : 100},
+
+}
